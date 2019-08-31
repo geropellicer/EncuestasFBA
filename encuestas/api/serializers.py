@@ -5,7 +5,8 @@ class RespuestaSerializer(serializers.ModelSerializer):
     
     class Meta():
         model = Respuesta
-        fields = "__all__"
+        exclude = ('votos',)
+        
 
     def create(self, validated_data):
         preguntas_data = validated_data.pop('preguntas')

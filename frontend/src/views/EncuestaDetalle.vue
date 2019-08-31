@@ -13,14 +13,14 @@
                   <div style="display: flex; justify-content: center; flex-direction: column, align-items: center; width: 100%" class="my-5">
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
                       <label v-for="respuesta in pregunta.respuestas" :key="respuesta.codigo" class="btn btn-lg btn-secondary p-4">
-                        <input type="radio" :name="pregunta" :id="respuesta.codigo" autocomplete="off"> {{respuesta.texto}}
+                        <input type="radio" :name="pregunta.id" :id="respuesta.codigo" :pk="respuesta.id" :codRes="respuesta.codigo" :pkPreg="pregunta.id" :codPreg="pregunta.codigo" autocomplete="off"> {{respuesta.texto}}
                       </label>
                     </div>
                   </div>
 
                     <button @click="anteriorPregunta" v-if="pregunta.codigo != 1" type="button" class="btn btn-secondary btn-lg float-left mb-3">Anterior</button>
                     <button @click="siguientePregunta" v-if="pregunta.codigo != preguntas.length" type="button" class="btn btn-primary btn-lg float-right mb-3">Siguiente</button>
-                    <button v-if="pregunta.codigo == preguntas.length" type="button" class="btn btn-primary btn-lg float-right mb-3">Enviar</button>
+                    <button v-if="pregunta.codigo == preguntas.length" type="button" class="btn btn-primary btn-lg float-right mb-3" data-toggle="modal" data-target="#exampleModalCenter">Enviar</button>
 
                 </div>
               </div>
@@ -36,6 +36,29 @@
           </div>
           
     </div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Confirmar</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Enviar respuestas? Esto no se puede deshacer!
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button @click="enviarRespuestas" type="button" class="btn btn-primary">Confirmar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
   </div>
 </template>
 
@@ -55,50 +78,55 @@ export default {
       preguntas: [],
       next: null,
       loadingQuestions: false,
+      respuestas: [],
     }
   },
   methods: {
+    enviarRespuestas: function(){
+      var entradasEnviadas = 0;
+
+      if($('label.active > input').length < this.preguntas.length){
+        window.alert("Hay preguntas vacias!");
+        return false;
+      }
+
+      $('label.active > input').each(function(i, el){
+        let pkResp = $(el).attr('pk');
+        let codResp = $(el).attr('codRes');
+        let pkPreg = $(el).attr('pkPreg');
+        let codPreg = $(el).attr('codPreg');
+        console.log(pkResp + ' ' + codResp + ' ' + pkPreg + ' ' + codPreg);
+        
+          if (pkResp && pkPreg) {
+          let endpoint = `/api/entradas/`;
+          apiService(endpoint, "POST", { pk_pregunta: pkPreg,
+                                          pk_respuesta  : pkResp,
+                                          cod_pregunta: codPreg,
+                                          cod_respuesta: codResp
+                                        })
+              .then(data => {
+                  console.log("Respuesta creada con exito" + i);
+                  entradasEnviadas += 1;
+                  if(entradasEnviadas == $('label.active > input').length){
+                    console.log("LISTO!")
+                     location.reload();
+                  }
+              })
+          if (this.error) {
+              this.error = null;
+          }
+          } else {
+              this.error = "You can't send an empty answer!";
+          }
+        
+      });
+    },
     siguientePregunta: function(){
       $('#carrusel').carousel('next');
     },
     anteriorPregunta: function(){
       $('#carrusel').carousel('prev');
     },
-      onSubmit: function(id){
-      // Mandamos a la base
-            if (this.fechaTurno && this.horarioTurno) {
-            let endpoint = `/apic/alquileres/`;
-            let datetime = this.fechaTurno + 'T' + this.horarioTurno;
-            this.fechahorarioTurno = datetime;
-            apiService(endpoint, "POST", { turno_desde: datetime,
-                                            turno_hasta: datetime,
-                                            cancha: this.cancha.id,
-                                            cliente: this.clienteSend,
-                                            empleado: this.empleadoSend,})
-                .then(data => {
-                this.alquileres.unshift(data)
-                })
-            if (this.error) {
-                this.error = null;
-            }
-            } else {
-                this.error = "You can't send an empty answer!";
-            }
-
-                this.fechaTurno = '';
-                this.horarioTurno = '';
-                this.canchaAlquilandoSend = '';
-                this.clienteSend = '';
-                this.empleadoSend = '';
-                this.fechahorarioTurno = '';
-                this.alquilando = false;
-
-      },
-        cerrarFormulario: function(){
-        this.alquilando = false;
-        this.alquilandoNum = 0;
-        },
-
     getEncuestaDetalles() {
       // get the details of a question instance from the REST API and call setPageTitle
       let endpoint = `/api/encuestas/${this.id}/`;
@@ -107,6 +135,11 @@ export default {
           if (data) {
             this.encuesta = data;
             this.preguntas = data.preguntas
+            for(let i = 0; i<preguntas.length; i++) {
+              let pkPregunta = data.preguntas.i.id;
+              let entrada = {pk: 0};
+              this.respuestas.push(entrada)
+            };
             this.setPageTitle(data.texto)
           } else {
             this.encuesta = null;
@@ -143,9 +176,6 @@ export default {
   },
   created() {
     this.getEncuestaDetalles();
-    $('#carrusel').carousel({
-      interval: false
-    })
     document.title = "Encuestas APP";
   }, 
 };

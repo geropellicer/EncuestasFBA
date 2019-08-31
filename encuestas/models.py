@@ -45,9 +45,11 @@ class Respuesta(models.Model):
 class Entrada(models.Model):
     pk_pregunta = models.PositiveIntegerField()
     pk_respuesta = models.PositiveIntegerField()
+    cod_pregunta = models.PositiveIntegerField()
+    cod_respuesta = models.PositiveSmallIntegerField()
     fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return "Entrada Nº" + self.pk
+        return "Entrada Nº" + str(self.pk) + " del " + str(self.fecha)
     
     
