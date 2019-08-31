@@ -2,22 +2,25 @@
   <div class="home">
     <div class="container mt-2">
 
-              <div id="carrusel" class="carousel slide" data-ride="carousel">
-            <ol class="carousel-indicators">
-              <li v-for="pregunta in preguntas" :key="pregunta.codigo" data-target="#carrusel" :data-slide-to="pregunta.codigo" class="active"></li>
-            </ol>
-            <div class="carousel-inner">
-              <div v-for="pregunta in preguntas" :key="pregunta.codigo" v-bind:class="{ active: pregunta.codigo == 1 }" class="carousel-item card bg-light mb-3">
+              <div id="carrusel" class="carousel slide mt-5" data-ride="carousel">
+            <div class="carousel-inner" style="box-shadow: 0 0 15px 2px rgba(0,0,0,.5)">
+              <div v-for="pregunta in preguntas" :key="pregunta.codigo" v-bind:class="{ active: pregunta.codigo == 1 }" class="carousel-item card bg-light">
                 <div class="card-header">Pregunta {{ pregunta.codigo }} de {{ preguntas.length }}</div>
                 <div class="card-body">
                   <h5 class="card-title">{{ pregunta.texto }}</h5>
                   <p class="card-text">{{ pregunta.descripcion }}</p>
 
+                  <div style="display: flex; justify-content: center; flex-direction: column, align-items: center; width: 100%" class="my-5">
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                      <label v-for="respuesta in pregunta.respuestas" :key="respuesta.codigo" class="btn btn-secondary">
+                      <label v-for="respuesta in pregunta.respuestas" :key="respuesta.codigo" class="btn btn-lg btn-secondary p-4">
                         <input type="radio" :name="pregunta" :id="respuesta.codigo" autocomplete="off"> {{respuesta.texto}}
                       </label>
                     </div>
+                  </div>
+
+                    <button @click="anteriorPregunta" v-if="pregunta.codigo != 1" type="button" class="btn btn-secondary btn-lg float-left mb-3">Anterior</button>
+                    <button @click="siguientePregunta" v-if="pregunta.codigo != preguntas.length" type="button" class="btn btn-primary btn-lg float-right mb-3">Siguiente</button>
+                    <button v-if="pregunta.codigo == preguntas.length" type="button" class="btn btn-primary btn-lg float-right mb-3">Enviar</button>
 
                 </div>
               </div>
@@ -55,6 +58,12 @@ export default {
     }
   },
   methods: {
+    siguientePregunta: function(){
+      $('#carrusel').carousel('next');
+    },
+    anteriorPregunta: function(){
+      $('#carrusel').carousel('prev');
+    },
       onSubmit: function(id){
       // Mandamos a la base
             if (this.fechaTurno && this.horarioTurno) {
@@ -133,7 +142,10 @@ export default {
     }
   },
   created() {
-    this.getEncuestaDetalles()
+    this.getEncuestaDetalles();
+    $('#carrusel').carousel({
+      interval: false
+    })
     document.title = "Encuestas APP";
   }, 
 };
@@ -153,5 +165,8 @@ export default {
 .question-link:hover {
   color: #343A40;
   text-decoration: none;
+}
+.btn.btn-lg.btn-secondary.p-4.active {
+  background-color: green;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app"  style="min-height: 100%; background:red">
     <NavbarComponent/>
     <router-view/>
   </div>
