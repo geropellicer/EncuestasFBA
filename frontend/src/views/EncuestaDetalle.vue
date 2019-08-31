@@ -2,7 +2,7 @@
   <div class="home">
     <div class="container mt-2">
 
-              <div id="carrusel" class="carousel slide mt-5" data-ride="carousel">
+              <div id="carrusel" class="carousel slide mt-5">
             <div class="carousel-inner" style="box-shadow: 0 0 15px 2px rgba(0,0,0,.5)">
               <div v-for="pregunta in preguntas" :key="pregunta.codigo" v-bind:class="{ active: pregunta.codigo == 1 }" class="carousel-item card bg-light">
                 <div class="card-header">Pregunta {{ pregunta.codigo }} de {{ preguntas.length }}</div>
