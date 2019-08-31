@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from encuestas.models import Encuesta, Pregunta, Respuesta
+from encuestas.models import Encuesta, Pregunta, Respuesta, Entrada
 
 class RespuestaSerializer(serializers.ModelSerializer):
     
@@ -39,13 +39,8 @@ class EncuestaSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-#  def create(self, validated_data):
-#         order = Order.objects.get(pk=validated_data.pop('event'))
-#         instance = Equipment.objects.create(**validated_data)
-#         Assignment.objects.create(Order=order, Equipment=instance)
-#         return instance
+class EntradaSerializer(serializers.ModelSerializer):
 
-# def to_representation(self, instance):
-#     representation = super(EquipmentSerializer, self).to_representation(instance)
-#     representation['assigment'] = AssignmentSerializer(instance.assigment_set.all(), many=True).data
-#     return representation 
+    class Meta():
+        model = Entrada
+        fields = "__all__"

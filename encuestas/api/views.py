@@ -5,11 +5,12 @@ from rest_framework import exceptions
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAdminUser
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.generics import GenericAPIView
 
 
 
-from encuestas.models import Encuesta, Pregunta, Respuesta
-from encuestas.api.serializers import EncuestaSerializer, PreguntaSerializer, RespuestaSerializer
+from encuestas.models import Encuesta, Pregunta, Respuesta, Entrada
+from encuestas.api.serializers import EncuestaSerializer, PreguntaSerializer, RespuestaSerializer, EntradaSerializer
 
 class EncuestaViewSet(mixins.UpdateModelMixin,
                     mixins.ListModelMixin,
@@ -62,3 +63,13 @@ class RespuestaViewSet(mixins.UpdateModelMixin,
 
     def perform_destroy(self, instance):
         instance.delete()
+
+
+class EntradaViewSet(mixins.CreateModelMixin,
+                    mixins.ListModelMixin,
+                    mixins.DestroyModelMixin,
+                    GenericViewSet):
+    queryset = Entrada.objects.all()
+    serializer_class = EntradaSerializer
+    permission_classes = [IsAdminUser]
+    
