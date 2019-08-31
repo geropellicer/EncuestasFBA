@@ -11,7 +11,7 @@
                 <div class="card-header">Pregunta {{ pregunta.codigo }} de {{ preguntas.length }}</div>
                 <div class="card-body">
                   <h5 class="card-title">{{ pregunta.texto }}</h5>
-                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                  <p class="card-text">{{ pregunta.descripcion }}</p>
 
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
                       <label v-for="respuesta in pregunta.respuestas" :key="respuesta.codigo" class="btn btn-secondary">

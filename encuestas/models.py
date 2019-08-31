@@ -13,6 +13,7 @@ class Encuesta(models.Model):
 
 class Pregunta(models.Model):
     texto = models.CharField(max_length=200)
+    descripcion = models.CharField(max_length=300, blank=True, null=True)
     codigo = models.PositiveSmallIntegerField()
     encuesta = models.ForeignKey(Encuesta, on_delete=models.CASCADE, related_name="preguntas")
     cantidad_respondidas = models.PositiveSmallIntegerField(blank=True, null=True)
